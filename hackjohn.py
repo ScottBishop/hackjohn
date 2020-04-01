@@ -26,13 +26,13 @@ spaces = 2
 exclude = [
     #     'Happy Isles->Little Yosemite Valley',
     #     'Happy Isles->Sunrise/Merced Lake (pass through)',
-    "Glacier Point->Little Yosemite Valley",
-    "Sunrise Lakes",
-    "Lyell Canyon",
+    #"Glacier Point->Little Yosemite Valley",
+    #"Sunrise Lakes",
+    #"Lyell Canyon",
 ]
 
 # Dates you'd like to start on (inclusive of end date)
-dates = pandas.date_range(start="2019-08-30", end="2019-10-05", freq="D")
+dates = pandas.date_range(start="2020-7-12", end="2020-8-31", freq="D")
 dates
 
 # Write output to this file. If the generated output is identical to
@@ -64,7 +64,7 @@ def get_trailhead_df():
 
     (wide_df,) = pandas.read_html(
         response.text,
-        header=1,
+        header=2,
         attrs={"id": "cs_idLayout2"},
         flavor="html5lib",
         parse_dates=["Date"],
@@ -131,9 +131,9 @@ enable_middleman = False
 
 # Get token from messaging /start to @MiddleManBot on Telegram
 # https://telegram.me/MiddleManBot
-token = "replace-with-private-telegram-middlemanbot-token"
+token = "f58252f0-c58a-4bb6-9d8b-44c759218662"
 
-hostname = "https://middleman.ferdinand-muetsch.de"
+hostname = "http://localhost:8080/"
 mmb_url = hostname + "/api/messages"
 payload = {
     "recipient_token": token,
@@ -141,31 +141,18 @@ payload = {
     "origin": "hackjohn",
 }
 if notify and enable_middleman:
+    print("sending middleman request")
     mmb_response = requests.post(mmb_url, json=payload)
     print("middleman status code", mmb_response.status_code)
     print(mmb_response.text)
 
 ## Notifications using IFTTT
+enable_ifttt = True
+event_name = "hackjohn"
 
 # Set enable_ifttt to True and personalize ifttt_key to receive IFTTT notifications
-enable_ifttt = False
-event_name = "hackjohn"
-ifttt_key = "replace-with-ifttt-key"
-
-"""
-## IFTTT Setup Instructions
-
-Create you own IFTTT at https://ifttt.com/create.
-Select webhooks for this and select "Receive a web request".
-Set event name to match `event_name` variable above.
-Create a that to respond to the event.
-For example, select "Send a rich notification from the IFTTT app"
-(IFTTT rich notifications allow click to call options to the reservation line).
-You can add 3 values (specified below).
-For example, use `{{Value1}}` for the message template and `tel: {{Value2}}` as link action.
-Go to https://ifttt.com/maker_webhooks and click on documentation,
-copy & paste your key into the `ifttt_key` variable above.
-"""
+# enable_ifttt = True
+ifttt_key = "fJ09D0313TIjpguNi-w59LHheAO-51wYw3pTqnz8pLH"
 
 ifttt_hostname = "https://maker.ifttt.com"
 ifttt_url = ifttt_hostname + "/trigger/" + event_name + "/with/key/" + ifttt_key
@@ -178,3 +165,21 @@ if notify and enable_ifttt:
     response = requests.post(ifttt_url, data=report)
     print("ifttt status code", response.status_code)
     print(response.text)
+
+
+# Set enable_ifttt to True and personalize ifttt_key to receive IFTTT notifications
+ifttt_key = "bXfB1siCKuPTjSHqVj3xrL"
+
+
+ifttt_hostname = "https://maker.ifttt.com"
+ifttt_url = ifttt_hostname + "/trigger/" + event_name + "/with/key/" + ifttt_key
+
+if notify and enable_ifttt:
+    report = {
+        "value1": text,
+        "value2": "209-372-0740",
+    }
+    response = requests.post(ifttt_url, data=report)
+    print("ifttt status code", response.status_code)
+    print(response.text)
+
